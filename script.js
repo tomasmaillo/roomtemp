@@ -1,49 +1,40 @@
-$.get("https://api.thingspeak.com/channels/676492/fields/1.json?results=288", function(data) {
+$.get("https://api.thingspeak.com/channels/676492/feeds.json?results=288", function(data) {
 
     var tempData = [];
     var tempLabels = [];
 
-    var prevTemp = undefined;
-    for (let i = 1; i < data["feeds"].length - 1; i++) {
+    var humData = [];
+    var humLabels = [];
+
+    var dataLength = data["feeds"].length
+
+    for (let i = 0; i < dataLength; i++) {
         const element = data["feeds"][i]
         if (element["field1"] > 13) {
-            /*
-                                const prevElement = data["feeds"][i - 1] || undefined;
-
-                                const nextElement = data["feeds"][i + 1] || undefined;
-
-                                let dif1 = element["field1"] - prevElement["field1"]
-                                let dif2 = element["field1"] - nextElement["field1"]
-
-                                let spread = Math.abs(dif1 - dif2)
-
-                                if (spread > 0.2) {*/
             tempData.push({
                 y: element["field1"],
                 x: new Date(element["created_at"])
             });
         }
 
-        /*}*/
+
     }
-    /*
-    data["feeds"].forEach(element => {
 
-        if (element["field1"] > 13) {
-            if (Math.abs(element["field1"] - prevTemp) < 0.5 || prevTemp == undefined) {
-                tempData.push({
-                    y: element["field1"],
-                    x: new Date(element["created_at"])
-                });
-                tempLabels.push("dsfsd" + (new Date(element["created_at"])))
-                prevTemp = element["field1"]
-            }
-
+    for (let i = 0; i < dataLength; i++) {
+        const element = data["feeds"][i]
+        if (element["field2"]) {
+            humData.push({
+                y: element["field2"],
+                x: new Date(element["created_at"])
+            });
         }
 
-    });*/
 
-    console.log(tempData)
+    }
+
+
+
+    console.log(humData)
 
     var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -51,25 +42,42 @@ $.get("https://api.thingspeak.com/channels/676492/fields/1.json?results=288", fu
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: tempLabels,
             datasets: [{
-                fontColor: 'white',
-                label: 'Room temp at time',
-                data: tempData,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)'
-                ],
-                borderWidth: 1
-            }]
+                    fontColor: 'red',
+                    label: 'Temperature',
+                    data: tempData,
+                    yAxisID: 'A',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)'
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    fontColor: 'blue',
+                    label: 'Humidity',
+                    data: humData,
+                    yAxisID: 'B',
+                    backgroundColor: [
+                        'rgba(132, 99, 255, 0.1)'
+                    ],
+                    borderColor: [
+                        'rgba(132, 99, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
             scales: {
                 yAxes: [{
+                    id: 'A',
+                    type: 'linear',
+                    position: 'left',
                     ticks: {
                         beginAtZero: false,
                         fontColor: "#999",
@@ -79,6 +87,25 @@ $.get("https://api.thingspeak.com/channels/676492/fields/1.json?results=288", fu
                     scaleLabel: {
                         display: true,
                         labelString: 'Temp (*C)',
+                        fontColor: '#999',
+                        fontSize: 10
+                    }
+                }, {
+                    id: 'B',
+                    type: 'linear',
+                    position: 'right',
+
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: "#999",
+                        fontSize: 10,
+                        max: 100,
+                        min: 0
+                    },
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Hum (%)',
                         fontColor: '#999',
                         fontSize: 10
                     }
@@ -101,7 +128,7 @@ $.get("https://api.thingspeak.com/channels/676492/fields/1.json?results=288", fu
                 }]
             },
             legend: {
-                display: false,
+                display: true,
                 position: 'top',
                 labels: {
                     fontColor: '#aaa'
@@ -110,6 +137,14 @@ $.get("https://api.thingspeak.com/channels/676492/fields/1.json?results=288", fu
 
         }
     });
+
+
+
+    document.getElementById("number-points").innerHTML = dataLength;
+
+    setInterval(function() {
+        document.getElementById("last-measurement").innerHTML = Math.round((new Date() - new Date(data["feeds"][dataLength - 1]["created_at"])) / 1000);
+    }, 600);
 });
 
 console.log(window.innerWidth)
