@@ -2,7 +2,7 @@ body {
     padding: 0;
     margin: 0;
     background: #444;
-    font-family: 'Roboto Mono', monospace;
+    font-family: "Roboto Mono", monospace;
     color: white;
 }
 
@@ -54,6 +54,12 @@ p.right {
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+span {
+    background-color: #3a3a3a;
+    padding: 2px;
+    border-radius: 5px;
 }
 
 
