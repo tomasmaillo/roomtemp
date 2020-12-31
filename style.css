@@ -1,0 +1,69 @@
+body {
+    padding: 0;
+    margin: 0;
+    background: #444;
+    font-family: 'Roboto Mono', monospace;
+    color: white;
+}
+
+.overlay {
+    max-width: unset;
+    width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media only screen and (min-width: 600px) {
+    .overlay {
+        max-width: 700px;
+    }
+    h1,
+    h2,
+    h3 {
+        margin-top: 0.5em;
+        margin-bottom: 0.3em;
+    }
+    .desktop {
+        display: initial !important;
+    }
+    .mobile {
+        display: none !important;
+    }
+}
+
+a {
+    text-decoration: underline;
+    color: white;
+    padding: 0 3px;
+    border-radius: 3px;
+    transition: 0.4s;
+}
+
+a:hover {
+    background: rgba(255, 99, 132, 0.2);
+    cursor: pointer;
+}
+
+p.right {
+    text-align: right;
+    margin: 0 10 10 0;
+    font-size: smaller;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+
+/* No scroll bar */
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
