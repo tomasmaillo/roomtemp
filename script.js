@@ -1,158 +1,192 @@
-$.get("https://api.thingspeak.com/channels/676492/feeds.json?results=288", function(data) {
+var lastPointTime = null;
+var tempData = [];
+var humData = [];
+var initialPointFetch = 400
 
-    var tempData = [];
-    var tempLabels = [];
+window.onload = function() {
+    var ctx = document.getElementById("myChart").getContext("2d");
+    window.myLine = getNewChart(ctx, config);
+};
 
-    var humData = [];
-    var humLabels = [];
-
-    var dataLength = data["feeds"].length
-
-    for (let i = 0; i < dataLength; i++) {
-        const element = data["feeds"][i]
-        if (element["field1"] > 13) {
-            tempData.push({
-                y: element["field1"],
-                x: new Date(element["created_at"])
-            });
-        }
+function getNewChart(canvas, config) {
+    return new Chart(canvas, config);
+}
 
 
-    }
-
-    for (let i = 0; i < dataLength; i++) {
-        const element = data["feeds"][i]
-        if (element["field2"]) {
-            humData.push({
-                y: element["field2"],
-                x: new Date(element["created_at"])
-            });
-        }
-
-
-    }
-
-
-
-    console.log(humData)
-
-    var ctx = document.getElementById('myChart').getContext('2d');
-
-
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            datasets: [{
-                    fontColor: 'red',
-                    label: 'Temperature',
-                    data: tempData,
-                    yAxisID: 'A',
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
-                },
-                {
-                    fontColor: 'blue',
-                    label: 'Humidity',
-                    data: humData,
-                    yAxisID: 'B',
-                    backgroundColor: [
-                        'rgba(132, 99, 255, 0.1)'
-                    ],
-                    borderColor: [
-                        'rgba(132, 99, 255, 1)'
-                    ],
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            scales: {
-                yAxes: [{
-                    id: 'A',
-                    type: 'linear',
-                    position: 'left',
-                    ticks: {
-                        beginAtZero: false,
-                        fontColor: "#999",
-                        fontSize: 10
-                    },
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Temp (*C)',
-                        fontColor: '#999',
-                        fontSize: 10
-                    }
-                }, {
-                    id: 'B',
-                    type: 'linear',
-                    position: 'right',
-
-                    ticks: {
-                        beginAtZero: true,
-                        fontColor: "#999",
-                        fontSize: 10,
-                        max: 100,
-                        min: 0
-                    },
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Hum (%)',
-                        fontColor: '#999',
-                        fontSize: 10
-                    }
-                }],
-                xAxes: [{
-                    type: 'time',
-                    distribution: 'linear',
-                    ticks: {
-                        beginAtZero: false,
-                        fontColor: "#999",
-                        fontSize: 10
-                    },
-                    display: true,
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'Time (hh:mm)',
-                        fontColor: '#999',
-                        fontSize: 10
-                    }
-                }]
+var config = {
+    type: 'line',
+    data: {
+        datasets: [{
+                fontColor: 'red',
+                label: 'Temperature',
+                data: tempData,
+                yAxisID: 'A',
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
             },
-            legend: {
-                display: true,
-                position: 'top',
-                labels: {
-                    fontColor: '#aaa'
-                }
+            {
+                fontColor: 'blue',
+                label: 'Humidity',
+                data: humData,
+                yAxisID: 'B',
+                backgroundColor: [
+                    'rgba(132, 99, 255, 0.1)'
+                ],
+                borderColor: [
+                    'rgba(132, 99, 255, 1)'
+                ],
+                borderWidth: 1
             }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            yAxes: [{
+                id: 'A',
+                type: 'linear',
+                position: 'left',
+                ticks: {
+                    beginAtZero: false,
+                    fontColor: "#999",
+                    fontSize: 10
+                },
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Temp (*C)',
+                    fontColor: '#999',
+                    fontSize: 10
+                }
+            }, {
+                id: 'B',
+                type: 'linear',
+                position: 'right',
 
+                ticks: {
+                    beginAtZero: true,
+                    fontColor: "#999",
+                    fontSize: 10,
+                    max: 100,
+                    min: 0
+                },
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Hum (%)',
+                    fontColor: '#999',
+                    fontSize: 10
+                }
+            }],
+            xAxes: [{
+                type: 'time',
+                distribution: 'linear',
+                ticks: {
+                    beginAtZero: false,
+                    fontColor: "#999",
+                    fontSize: 10
+                },
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Time (hh:mm)',
+                    fontColor: '#999',
+                    fontSize: 10
+                }
+            }]
+        },
+        legend: {
+            display: true,
+            position: 'top',
+            labels: {
+                fontColor: '#aaa'
+            }
+        }
+
+    }
+}
+
+
+// Initial data fetch
+$.get(`https://api.thingspeak.com/channels/676492/feeds.json?results=${initialPointFetch}`, function(data) {
+
+    for (let i = 0; i < data["feeds"].length; i++) {
+        const pointTime = data["feeds"][i]["created_at"];
+        const pointTemp = data["feeds"][i]["field1"];
+        const pointHum = data["feeds"][i]["field2"];
+
+        if (((new Date() - new Date(pointTime)) / 1000) < 86400) {
+            if (pointTemp > 13) {
+                tempData.push({
+                    y: pointTemp,
+                    x: new Date(pointTime)
+                });
+            }
+            if (pointHum) {
+                humData.push({
+                    y: pointHum,
+                    x: new Date(pointTime)
+                });
+            }
+        }
+    }
+
+    lastPointTime = data["feeds"][data["feeds"].length - 1]["created_at"];
+
+    window.myLine.update();
+
+    document.getElementById("number-points").innerHTML = tempData.length;
+
+});
+
+// Last update indicator
+setInterval(function() {
+    document.getElementById("last-measurement").innerHTML = Math.round((new Date() - new Date(lastPointTime)) / 1000);
+}, 0);
+
+// Fetching any new points
+setInterval(function() {
+
+    $.get("https://api.thingspeak.com/channels/676492/feeds.json?results=1", function(data) {
+
+        const pointTime = data["feeds"][0]["created_at"];
+        const pointTemp = data["feeds"][0]["field1"];
+        const pointHum = data["feeds"][0]["field2"];
+
+        if (pointTime > lastPointTime) {
+
+            config.data.datasets[0].data.push({
+                y: pointTemp,
+                x: new Date(pointTime)
+            });
+            config.data.datasets[1].data.push({
+                y: pointHum,
+                x: new Date(pointTime)
+            });
+
+            config.data.datasets[0].data.splice(0, 1);
+            config.data.datasets[1].data.splice(0, 1);
+
+            window.myLine.update();
+            console.log("new point found and added")
+            lastPointTime = pointTime;
         }
     });
 
 
+}, 20000);
 
-    document.getElementById("number-points").innerHTML = dataLength;
 
-    setInterval(function() {
-        document.getElementById("last-measurement").innerHTML = Math.round((new Date() - new Date(data["feeds"][dataLength - 1]["created_at"])) / 1000);
-    }, 600);
-});
-
-console.log(window.innerWidth)
-
+// Phone stuff
 if (1410 < window.innerWidth) {
     $("#chart-scroll").css('overflow-x', 'hidden')
     $("#chart-container").css("width", window.innerWidth - 20 + "px")
-
 } else {
     $("#chart-container").css("width", "3020px")
 }
@@ -160,19 +194,7 @@ if (1410 < window.innerWidth) {
 
 // Not my code
 function dateToNiceString(myDate) {
-    var month = new Array();
-    month[0] = "Jan";
-    month[1] = "Feb";
-    month[2] = "Mar";
-    month[3] = "Apr";
-    month[4] = "May";
-    month[5] = "Jun";
-    month[6] = "Jul";
-    month[7] = "Aug";
-    month[8] = "Sep";
-    month[9] = "Oct";
-    month[10] = "Nov";
-    month[11] = "Dec";
+    var month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     var hours = myDate.getHours();
     var minutes = myDate.getMinutes();
     var ampm = hours >= 12 ? 'pm' : 'am';
