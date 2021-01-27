@@ -31,6 +31,14 @@ body {
     }
 }
 
+.warning {
+    border: 0.5px solid #ddd;
+    border-radius: 15px;
+    margin: 20px;
+    padding: 7px 10px 10px 7px;
+    text-align: center;
+}
+
 a {
     text-decoration: underline;
     color: white;
@@ -42,6 +50,10 @@ a {
 a:hover {
     background: rgba(255, 99, 132, 0.2);
     cursor: pointer;
+}
+
+p {
+    margin: 0px;
 }
 
 p.right {
