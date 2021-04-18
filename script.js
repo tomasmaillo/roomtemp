@@ -178,10 +178,10 @@ setInterval(function() {
 // Phone stuff
 if (1410 < window.innerWidth) {
     $("#chart-scroll").css('overflow-x', 'hidden')
-    $("#chart-container").css("width", window.innerWidth - 20 + "px")
+    $("#chart-container").css("width", window.innerWidth - 5 + "px")
     $("#chart-container").css("height", "100%");
 } else {
-    $("#chart-container").css("width", "1520px");
+    $("#chart-container").css("width", "2320px");
     $("#chart-container").css("height", "90%");
 }
 
