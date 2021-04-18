@@ -21,12 +21,8 @@ var config = {
                 label: 'Temperature',
                 data: tempData,
                 yAxisID: 'A',
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)'
-                ],
+                backgroundColor: ['rgba(255, 99, 132, 0.2)'],
+                borderColor: ['rgba(255, 99, 132, 1)'],
                 borderWidth: 1
             },
             {
@@ -34,19 +30,15 @@ var config = {
                 label: 'Humidity',
                 data: humData,
                 yAxisID: 'B',
-                backgroundColor: [
-                    'rgba(132, 99, 255, 0.1)'
-                ],
-                borderColor: [
-                    'rgba(132, 99, 255, 1)'
-                ],
+                backgroundColor: ['rgba(132, 99, 255, 0.1)'],
+                borderColor: ['rgba(132, 99, 255, 1)'],
                 borderWidth: 1
             }
         ]
     },
     options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         scales: {
             yAxes: [{
                 id: 'A',
@@ -187,8 +179,10 @@ setInterval(function() {
 if (1410 < window.innerWidth) {
     $("#chart-scroll").css('overflow-x', 'hidden')
     $("#chart-container").css("width", window.innerWidth - 20 + "px")
+    $("#chart-container").css("height", "100%");
 } else {
-    $("#chart-container").css("width", "3020px")
+    $("#chart-container").css("width", "1520px");
+    $("#chart-container").css("height", "90%");
 }
 
 
