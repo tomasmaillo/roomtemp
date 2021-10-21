@@ -1,6 +1,6 @@
-# [roomtemp.live](https://roomtemp.live/)
+# [roomtemp](https://tomasroma64.github.io/roomtemp/)
 
-Files behind [roomtemp.live](https://roomtemp.live/)
+Files behind [roomtemp](https://tomasroma64.github.io/roomtemp/)
 - Fetches data from [thingspeak](https://thingspeak.com/) (datalogger)
 - Uses [Chart.js](https://www.chartjs.org/) for graphing
 - Chart is updated when new data is fetched
